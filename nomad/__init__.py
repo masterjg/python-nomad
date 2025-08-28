@@ -9,6 +9,7 @@ from requests_unixsocket import Session
 
 from nomad import api
 
+
 class Nomad:  # pylint: disable=too-many-public-methods,too-many-instance-attributes
     """
     Nomad API
