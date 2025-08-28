@@ -78,7 +78,7 @@ class Nomad:  # pylint: disable=too-many-public-methods,too-many-instance-attrib
         self.verify = verify
         self.cert = cert if all(cert) else ()
         self.session = session
-        if self.address and self.address.startswith("http+unix://"):
+        if not self.session and self.address and self.address.startswith("http+unix://"):
             self.session = Session()
         self.__namespace = namespace or os.getenv("NOMAD_NAMESPACE", None)
 
