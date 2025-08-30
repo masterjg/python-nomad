@@ -29,3 +29,4 @@ from nomad.api.system import System
 from nomad.api.validate import Validate
 from nomad.api.variable import Variable
 from nomad.api.variables import Variables
+from nomad.api.volume import Volume

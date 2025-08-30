@@ -125,6 +125,7 @@ class Nomad:  # pylint: disable=too-many-public-methods,too-many-instance-attrib
         self._validate = api.Validate(**self.requester_settings)
         self._variable = api.Variable(**self.requester_settings)
         self._variables = api.Variables(**self.requester_settings)
+        self._volume = api.Volume(**self.requester_settings)
 
     def get_uri(self):
         """
@@ -336,3 +337,10 @@ class Nomad:  # pylint: disable=too-many-public-methods,too-many-instance-attrib
         Variables API
         """
         return self._variables
+
+    @property
+    def volume(self):
+        """
+        Volume API
+        """
+        return self._volume

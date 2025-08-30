@@ -10,3 +10,6 @@
 example.json
 example.nomad
 nomad.log
+
+# custom entrypoint
+run.py
