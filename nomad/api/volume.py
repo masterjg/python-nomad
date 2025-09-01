@@ -1,6 +1,7 @@
 """Nomad volumes: https://developer.hashicorp.com/nomad/api-docs/volumes"""
 
 from nomad.api.base import Requester
+from time import sleep
 
 
 class Volume(Requester):
@@ -40,7 +41,7 @@ class Volume(Requester):
           - nomad.api.exceptions.BaseNomadException
           - nomad.api.exceptions.URLNotFoundNomadException
         """
-        return self.request(
+        data = self.request(
             "csi",
             id_,
             "create",
@@ -49,7 +50,11 @@ class Volume(Requester):
                 "Volumes": [volume_config]
             },
             method="put"
-        ).json()
+        ).json()["Volumes"][0]
+        while not data["Schedulable"]:
+            data = self.get_csi_volume(id_)
+            sleep(2)
+        return data
 
     def get_csi_volume(self, id_):
         """This endpoint reads information about a specific volume by ID.
@@ -57,7 +62,7 @@ class Volume(Requester):
         https://developer.hashicorp.com/nomad/api-docs/volumes#read-csi-volume
 
         arguments:
-          - id_
+          - id_ :(str), volume ID
         returns: dict
         raises:
           - nomad.api.exceptions.BaseNomadException
