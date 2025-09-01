@@ -50,3 +50,17 @@ class Volume(Requester):
             },
             method="put"
         ).json()
+
+    def get_csi_volume(self, id_):
+        """This endpoint reads information about a specific volume by ID.
+
+        https://developer.hashicorp.com/nomad/api-docs/volumes#read-csi-volume
+
+        arguments:
+          - id_
+        returns: dict
+        raises:
+          - nomad.api.exceptions.BaseNomadException
+          - nomad.api.exceptions.URLNotFoundNomadException
+        """
+        return self.request("csi", id_, method="get").json()
