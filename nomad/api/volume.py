@@ -58,7 +58,7 @@ class Volume(Requester):
             },
             method="put"
         ).json()["Volumes"][0]
-        while not wait_until_schedulable or not data["Schedulable"]:
+        while wait_until_schedulable and not data["Schedulable"]:
             data = self.get_csi_volume(id_, volume_config["Namespace"])
             sleep(2)
         return data
