@@ -52,20 +52,24 @@ class Volume(Requester):
             method="put"
         ).json()["Volumes"][0]
         while not data["Schedulable"]:
-            data = self.get_csi_volume(id_)
+            data = self.get_csi_volume(id_, volume_config["Namespace"])
             sleep(2)
         return data
 
-    def get_csi_volume(self, id_):
+    def get_csi_volume(self, id_, namespace=None):
         """This endpoint reads information about a specific volume by ID.
 
         https://developer.hashicorp.com/nomad/api-docs/volumes#read-csi-volume
 
         arguments:
           - id_ :(str), volume ID
+          - namespace:(str) optional, namespace
         returns: dict
         raises:
           - nomad.api.exceptions.BaseNomadException
           - nomad.api.exceptions.URLNotFoundNomadException
         """
-        return self.request("csi", id_, method="get").json()
+        params = {}
+        if namespace:
+            params["namespace"] = namespace
+        return self.request("csi", id_, params=params, method="get").json()

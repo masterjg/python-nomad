@@ -62,6 +62,7 @@ class Requester:  # pylint: disable=too-many-instance-attributes,too-few-public-
             "node",
             "variable",
             "variables",
+            "volume"
         ]
         # split 0 -> Api Version
         # split 1 -> Working Endpoint
