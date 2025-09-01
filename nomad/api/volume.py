@@ -25,7 +25,13 @@ class Volume(Requester):
     def __getattr__(self, item):
         raise AttributeError
 
-    def create_csi_volume(self, id_, volume_config, override_sentinel_policies=False):
+    def create_csi_volume(
+        self,
+        id_,
+        volume_config,
+        override_sentinel_policies=False,
+        wait_until_schedulable = True
+    ):
         """
         This endpoint creates or updates a volume.
         https://developer.hashicorp.com/nomad/api-docs/volumes#create-csi-volume
@@ -36,6 +42,7 @@ class Volume(Requester):
             https://developer.hashicorp.com/nomad/api-docs/volumes#sample-payload-1
           - override_sentinel_policies :(bool) optional, If set, will ignore Sentinel
             soft policies
+          - wait_until_schedulable: (bool) optional, wait until volume is schedulable
         returns: dict
         raises:
           - nomad.api.exceptions.BaseNomadException
@@ -51,7 +58,7 @@ class Volume(Requester):
             },
             method="put"
         ).json()["Volumes"][0]
-        while not data["Schedulable"]:
+        while not wait_until_schedulable or not data["Schedulable"]:
             data = self.get_csi_volume(id_, volume_config["Namespace"])
             sleep(2)
         return data
