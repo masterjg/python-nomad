@@ -52,21 +52,38 @@ class stream(Requester):  # pylint: disable=invalid-name
             exit_event:
         """
 
+        decoder = json.JSONDecoder()
+
         while exit_event.is_set() is False:
+            buffer = ""
+
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    for raw_msg in resp.iter_lines():
-                        if not raw_msg:
-                            continue
-
-                        msg = json.loads(raw_msg)
-
-                        # don't send heartbeats
-                        if msg:
-                            event_queue.put(msg)
-
+                    for chunk in resp.iter_content(chunk_size=8192, decode_unicode=True):
                         if exit_event.is_set():
                             return
+
+                        if not chunk:
+                            continue
+
+                        buffer += chunk
+
+                        while buffer:
+                            buffer = buffer.lstrip()
+
+                            if not buffer:
+                                break
+
+                            try:
+                                msg, offset = decoder.raw_decode(buffer)
+                            except json.JSONDecodeError:
+                                break
+
+                            buffer = buffer[offset:]
+
+                            # don't send heartbeats
+                            if msg:
+                                event_queue.put(msg)
 
             except requests.exceptions.ConnectionError:
                 continue
