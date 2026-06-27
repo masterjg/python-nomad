@@ -7,6 +7,7 @@ import queue
 import requests
 
 from nomad.api.base import Requester
+from nomad.api.exceptions import BaseNomadException
 
 
 class Event:
@@ -66,6 +67,10 @@ class stream(Requester):  # pylint: disable=invalid-name
 
             except requests.exceptions.ConnectionError:
                 continue
+            except BaseNomadException as exception:
+                if "EOF" in str(exception):
+                    continue
+                raise
 
     def get_stream(
         self, index=0, topic=None, namespace=None, event_queue=None, timeout=None
