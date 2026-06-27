@@ -80,3 +80,31 @@ class Volume(Requester):
         if namespace:
             params["namespace"] = namespace
         return self.request("csi", id_, params=params, method="get").json()
+
+    def deregister_csi_volume(self, id_, namespace=None, force=False):
+        """
+        This endpoint deregisters an external CSI volume from Nomad.
+        It does not delete the external storage provider's data.
+
+        https://developer.hashicorp.com/nomad/api-docs/volumes#deregister-csi-volume
+
+        arguments:
+          - id_ :(str), volume ID
+          - namespace:(str) optional, namespace
+          - force:(bool) optional, immediately drop claims for terminal allocations.
+            Still errors if the volume has running allocations.
+
+        returns: dict
+        raises:
+          - nomad.api.exceptions.BaseNomadException
+          - nomad.api.exceptions.URLNotFoundNomadException
+        """
+        params = {}
+
+        if namespace:
+            params["namespace"] = namespace
+
+        if force:
+            params["force"] = "true"
+
+        return self.request("csi", id_, params=params, method="delete").json()
