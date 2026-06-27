@@ -55,7 +55,7 @@ class stream(Requester):  # pylint: disable=invalid-name
         while exit_event.is_set() is False:
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    for raw_msg in resp.iter_lines(chunk_size = 1):
+                    for raw_msg in resp.iter_lines(chunk_size = None):
                         if not raw_msg:
                             continue
 
