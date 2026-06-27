@@ -55,19 +55,17 @@ class stream(Requester):  # pylint: disable=invalid-name
         while exit_event.is_set() is False:
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    for raw_msg in resp.iter_lines(chunk_size = None):
+                    while not exit_event.is_set():
+                        raw_msg = resp.raw.readline()
+
                         if not raw_msg:
-                            continue
+                            break
 
                         msg = json.loads(raw_msg)
 
                         # don't send heartbeats
                         if msg:
                             event_queue.put(msg)
-
-                        if exit_event.is_set():
-                            return
-
             except requests.exceptions.ConnectionError:
                 continue
             except BaseNomadException as exception:
