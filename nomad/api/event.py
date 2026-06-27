@@ -5,6 +5,7 @@ import threading
 import queue
 
 import requests
+from time import sleep
 
 from nomad.api.base import Requester
 from nomad.api.exceptions import BaseNomadException
@@ -55,7 +56,7 @@ class stream(Requester):  # pylint: disable=invalid-name
         while exit_event.is_set() is False:
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    while not exit_event.is_set():
+                    while exit_event.is_set() is False:
                         raw_msg = resp.raw.readline()
 
                         if not raw_msg:
@@ -66,10 +67,16 @@ class stream(Requester):  # pylint: disable=invalid-name
                         # don't send heartbeats
                         if msg:
                             event_queue.put(msg)
+
+                if exit_event.is_set() is False:
+                    sleep(1)
+
             except requests.exceptions.ConnectionError:
+                sleep(1)
                 continue
             except BaseNomadException as exception:
                 if "EOF" in str(exception):
+                    sleep(1)
                     continue
                 raise
 
