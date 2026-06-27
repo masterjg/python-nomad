@@ -55,7 +55,7 @@ class stream(Requester):  # pylint: disable=invalid-name
         while exit_event.is_set() is False:
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    for raw_msg in resp.iter_lines():
+                    for raw_msg in resp.iter_lines(chunk_size = 1):
                         msg = json.loads(raw_msg)
 
                         # don't send heartbeats
