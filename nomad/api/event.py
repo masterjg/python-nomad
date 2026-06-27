@@ -59,12 +59,15 @@ class stream(Requester):  # pylint: disable=invalid-name
 
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    for chunk in resp.iter_content(chunk_size=8192, decode_unicode=True):
+                    for chunk in resp.raw.read_chunked(decode_content=True):
                         if exit_event.is_set():
                             return
 
                         if not chunk:
                             continue
+
+                        if isinstance(chunk, bytes):
+                            chunk = chunk.decode("utf-8")
 
                         buffer += chunk
 
