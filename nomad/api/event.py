@@ -59,13 +59,8 @@ class stream(Requester):  # pylint: disable=invalid-name
 
             try:
                 with self.request(method=method, params=params, timeout=timeout, stream=True) as resp:
-                    # Temporary debug, useful to know what transport we're actually getting.
-                    print(f"EVENT STREAM HEADERS: {dict(resp.headers)}", flush=True)
-
-                    http_response = resp.raw._fp  # pylint: disable=protected-access
-
                     while exit_event.is_set() is False:
-                        chunk = http_response.read1(8192)
+                        chunk = resp.raw.read1(8192, decode_content=True)
 
                         if not chunk:
                             break
