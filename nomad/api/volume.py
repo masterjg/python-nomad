@@ -94,7 +94,6 @@ class Volume(Requester):
           - force:(bool) optional, immediately drop claims for terminal allocations.
             Still errors if the volume has running allocations.
 
-        returns: dict
         raises:
           - nomad.api.exceptions.BaseNomadException
           - nomad.api.exceptions.URLNotFoundNomadException
@@ -107,4 +106,4 @@ class Volume(Requester):
         if force:
             params["force"] = "true"
 
-        return self.request("csi", id_, params=params, method="delete").json()
+        self.request("csi", id_, params=params, method="delete")
